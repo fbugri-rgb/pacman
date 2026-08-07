@@ -1,0 +1,69 @@
+// Pac-Man configuration file.
+//
+// This is JSON extended with comments: a '#' or '//' runs to the end of
+// the line, and /* ... */ spans several lines.  Comments are stripped
+// before parsing, so the file below is otherwise plain JSON.
+//
+// Every value is optional.  Anything missing, misspelled or out of range
+// is replaced by a safe default and reported on stderr at startup.
+// Unknown keys are ignored.
+{
+  # Where the top ten scores are stored, relative to the working
+  # directory.  The file is created on the first save.
+  "highscore_filename": "highscores.json",
+
+  # Lives the player starts with. Range: 1 - 99.
+  "lives": 3,
+
+  /* Scoring. All three are plain point amounts, range 0 - 100000. */
+  "points_per_pacgum": 10,
+  "points_per_super_pacgum": 50,
+  "points_per_ghost": 200,
+
+  # Seed of the FIRST level only, so level 1 is always the same maze.
+  # Every later level uses a random seed. Range: 1 - 2147483647.
+  "seed": 42,
+
+  # Number of pacgums scattered in the corridors of a level, used when a
+  # level does not override it.  The value is clamped to the number of
+  # corridor tiles available, so this large default simply fills every
+  # corridor.  Lower it for much shorter levels.
+  "pacgum": 9999,
+
+  # Time limit of a level in seconds, used when a level does not
+  # override it. Range: 10 - 3600.  Running out costs one life and
+  # restarts the level.
+  "level_max_time": 90,
+
+  # Player speed in tiles per second. Range: 1.0 - 20.0.
+  "player_speed": 6.0,
+
+  # How long ghosts stay edible after a super-pacgum, in seconds.
+  "super_pacgum_duration": 8.0,
+
+  # How long an eaten ghost stays away before returning to its corner.
+  "ghost_respawn_delay": 6.0,
+
+  # Set to false to disable the F1-F6 cheat keys.
+  "cheats_enabled": true,
+
+  /* The levels, played in order.  'width' and 'height' are maze sizes in
+     generator cells, range 7 - 35; the playable grid is twice as large
+     plus one, because walls occupy real tiles.  A level may override
+     'pacgum', 'max_time' and 'ghost_speed'.
+     Fewer than 10 levels are padded automatically. */
+  "level": [
+    {"width":  9, "height":  9, "max_time":  80, "ghost_speed": 3.6},
+    {"width": 10, "height": 10, "max_time":  95, "ghost_speed": 3.8},
+    {"width": 11, "height": 11, "max_time": 110, "ghost_speed": 4.0},
+    {"width": 12, "height": 12, "max_time": 125, "ghost_speed": 4.2},
+    {"width": 13, "height": 13, "max_time": 140, "ghost_speed": 4.4},
+    {"width": 14, "height": 14, "max_time": 155, "ghost_speed": 4.6},
+    {"width": 15, "height": 15, "max_time": 170, "ghost_speed": 4.8},
+    {"width": 16, "height": 16, "max_time": 190, "ghost_speed": 5.0},
+    {"width": 17, "height": 17, "max_time": 210, "ghost_speed": 5.2},
+    {"width": 18, "height": 18, "max_time": 230, "ghost_speed": 5.4},
+    {"width": 19, "height": 19, "max_time": 255, "ghost_speed": 5.6},
+    {"width": 21, "height": 21, "max_time": 300, "ghost_speed": 5.8}
+  ]
+}
