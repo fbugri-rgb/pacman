@@ -39,14 +39,14 @@ third day and run on every change, and only the test suite itself was
 written at the end. Chasing typing errors in one big batch at the end of
 a project is the classic way to lose a day.
 
-## Kanban board (state at 2026-08-07)
+## Kanban board (state at 2026-10-14)
 
 ```
 BACKLOG            | IN PROGRESS | REVIEW              | DONE
 -------------------+-------------+---------------------+----------------------
-Sound effects      |  --         | Itch.io upload      | Config loader
-Ghost tunnel       |             | (build ready,       | Maze adapter
-Sprite artwork     |             |  page to publish)   | Entities and AI
+Sound effects      |  --         |  --                 | Config loader
+Ghost tunnel       |             |                     | Maze adapter
+Sprite artwork     |             |                     | Entities and AI
 Level editor       |             |                     | Game rules, levels
                    |             |                     | Rendering and UI
                    |             |                     | Highscores
@@ -54,7 +54,16 @@ Level editor       |             |                     | Game rules, levels
                    |             |                     | Tests and linters
                    |             |                     | Packaging script
                    |             |                     | Documentation
+                   |             |                     | Itch.io upload
+                   |             |                     | CI release builds
+                   |             |                     |  (Linux, Windows,
+                   |             |                     |   macOS)
 ```
+
+The Itch.io upload, still waiting for its store page at M5, was
+finished on 2026-10-14. Since PyInstaller cannot cross-compile, it came
+with a GitHub Actions workflow that freezes the game on one runner per
+platform and pushes the three builds with butler.
 
 The backlog column holds ideas that are explicitly *out of scope*: they
 are written down so that they stop competing for attention with the
