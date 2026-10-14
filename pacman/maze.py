@@ -14,7 +14,9 @@ are cell centres and even coordinates are the walls between them.
 
 from __future__ import annotations
 
+import contextlib
 import importlib
+import io
 import random
 from dataclasses import dataclass
 from typing import Callable, Iterable
@@ -115,6 +117,7 @@ def _instantiate(width: int, height: int, seed: int) -> object:
 
     The package documentation and its implementation disagree on the
     argument names, so several spellings are tried before giving up.
+    Anything the generator prints while building is discarded.
 
     Args:
         width: Maze width in cells.
@@ -138,7 +141,10 @@ def _instantiate(width: int, height: int, seed: int) -> object:
     signature_errors: list[str] = []
     for kwargs in candidates:
         try:
-            return generator(**kwargs)
+            # The generator prints a cosmetic warning on stdout when the
+            # maze is too small for its '42' logo; the maze is still fine.
+            with contextlib.redirect_stdout(io.StringIO()):
+                return generator(**kwargs)
         except TypeError as exc:
             signature_errors.append(str(exc))
         except RecursionError as exc:

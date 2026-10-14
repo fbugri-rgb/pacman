@@ -126,3 +126,12 @@ def test_missing_generator_is_reported_cleanly(
     monkeypatch.setattr(importlib, "import_module", explode)
     with pytest.raises(MazeError, match="not installed"):
         build_level(9, 9, 10, 1)
+
+
+def test_generator_output_does_not_reach_stdout(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    # A 7x7 maze is too small for the generator's '42' logo, which makes
+    # it print a warning on stdout.
+    build_level(7, 7, 20, 42)
+    assert capsys.readouterr().out == ""
