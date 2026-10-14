@@ -24,3 +24,6 @@ highscores.json
 *.swp
 .idea/
 .vscode/
+
+# Subject, not part of the submission
+Pacman.pdf

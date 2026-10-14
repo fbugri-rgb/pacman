@@ -26,7 +26,7 @@ a self-reported "80% done" carries no information.
 | 5 | Game rules and levels | done | `pacman/game.py`, 12 levels in `config.json` |
 | 6 | Rendering and UI | done | `pacman/render.py`, `pacman/ui.py`, `pacman/app.py` |
 | 7 | Highscores and menus | done | `pacman/highscores.py`, 14 tests |
-| 8 | Tests and linters | done | 108 tests, `make lint` and `make lint-strict` clean |
+| 8 | Tests and linters | done | 109 tests, `make lint` and `make lint-strict` clean |
 | 9 | Packaging and docs | done | `pacman.spec`, `build.sh`, `README.md`, this directory |
 
 ## Quality indicators at M5
@@ -36,7 +36,7 @@ a self-reported "80% done" carries no information.
 | `flake8 .` | no finding | no finding |
 | `mypy` with the subject flags | no error | no error |
 | `mypy . --strict` | no error (bonus) | no error |
-| Test suite | all green | 108 passed |
+| Test suite | all green | 109 passed |
 | Uncaught traceback in a session | zero | zero |
 | Levels shipped | at least 10 | 12 |
 

@@ -7,6 +7,9 @@ imposed **A-Maze-ing** generator. Twelve levels, four ghosts with their
 own personalities, super-pacgums, a timer per level, persistent
 highscores and a cheat mode for the peer review.
 
+**Play it on Itch.io: <https://fbugri-rgb.itch.io/pacman>** — free
+builds for Linux, Windows and macOS (Apple Silicon).
+
 ---
 
 ## Description
@@ -36,7 +39,7 @@ Feature summary:
 - Persistent top-ten highscore table, tolerant to a corrupt file.
 - Cheat keys for the peer review.
 - Configuration in JSON with comments, every value validated and clamped.
-- flake8 clean, `mypy --strict` clean, 108 automated tests.
+- flake8 clean, `mypy --strict` clean, 109 automated tests.
 
 ## Instructions
 
@@ -288,7 +291,7 @@ block, so a window is never left open.
 ```sh
 make lint          # flake8 . and mypy with the required flags
 make lint-strict   # flake8 . and mypy . --strict
-make test          # 108 tests
+make test          # 109 tests
 ```
 
 All three are clean. Every function carries type hints and a PEP 257
