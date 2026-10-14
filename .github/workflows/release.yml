@@ -79,8 +79,14 @@ jobs:
           unzip -q butler.zip -d butler
           chmod +x butler/butler
           butler/butler -V
+      # Failures are re-emitted as annotations, which unlike the job log
+      # can be read without signing in to GitHub.
       - name: Push to Itch.io
         run: |
+          if [ -z "$BUTLER_API_KEY" ]; then
+            echo "::error title=Missing secret::BUTLER_API_KEY is empty or not set"
+            exit 1
+          fi
           if [ "$GITHUB_REF_TYPE" = "tag" ]; then
             version="$GITHUB_REF_NAME"
           else
@@ -89,7 +95,12 @@ jobs:
           for channel in linux windows mac; do
             mkdir -p "$channel"
             tar -xf "release-$channel.tar" -C "$channel"
-            butler/butler push "$channel/release" \
-              "$ITCH_TARGET:$channel" --userversion "$version"
+            if ! out=$(butler/butler push "$channel/release" \
+                "$ITCH_TARGET:$channel" --userversion "$version" 2>&1); then
+              echo "$out"
+              echo "::error title=butler push $channel::$(echo "$out" | tail -n 3 | tr '\n' ' ')"
+              exit 1
+            fi
+            echo "$out"
           done
           butler/butler status "$ITCH_TARGET"
