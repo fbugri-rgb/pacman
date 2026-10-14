@@ -11,6 +11,7 @@ retune the levels without rebuilding anything.  Written for PyInstaller 6.
 """
 
 import os
+import sys
 
 ROOT = os.path.abspath(os.getcwd())
 
@@ -47,7 +48,9 @@ executable = EXE(
     bootloader_ignore_signals=False,
     strip=False,
     upx=False,
-    console=False,
+    # macOS gets a plain executable: PyInstaller is retiring windowed
+    # one-file builds there, and a .app would need signing anyway.
+    console=sys.platform == "darwin",
     disable_windowed_traceback=True,
     argv_emulation=False,
     target_arch=None,

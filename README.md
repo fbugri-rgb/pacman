@@ -404,11 +404,23 @@ register, the acceptance test plan and the blocking points met are in the
 ## Packaging
 
 The game is distributed on Itch.io, at
-`https://fbugri.itch.io/pacman` — *replace this line with the real page
-once the build is uploaded.* It can also be built locally:
+<https://fbugri-rgb.itch.io/pacman>, as an unlisted build for Linux,
+Windows and macOS (Apple Silicon).
+
+PyInstaller cannot cross-compile, so the three builds come from the
+GitHub Actions workflow `.github/workflows/release.yml`: it runs the
+linters and the tests, freezes the game on one runner per platform, and
+pushes each build to its Itch.io channel with
+[butler](https://itch.io/docs/butler/). It is started by hand from the
+Actions tab, or by pushing a `v*` tag, and needs a `BUTLER_API_KEY`
+repository secret.
+
+The game can also be built and pushed locally, for the platform of the
+machine running the script:
 
 ```sh
 ./build.sh
+butler push dist/release fbugri-rgb/pacman:linux
 ```
 
 The script checks the toolchain, freezes the game with PyInstaller

@@ -1,0 +1,95 @@
+# Build the game on Linux, Windows and macOS, then push every build to
+# Itch.io with butler.
+#
+# Runs by hand from the Actions tab ("Run workflow"), or on a pushed tag
+# such as v1.2.  PyInstaller cannot cross-compile, so each platform is
+# frozen on its own runner.  Needs a BUTLER_API_KEY repository secret,
+# created at https://itch.io/user/settings/api-keys.
+
+name: release
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ["v*"]
+
+env:
+  ITCH_TARGET: fbugri-rgb/pacman
+  PYTHON_VERSION: "3.10"
+
+jobs:
+  check:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - run: make install PYTHON=python
+      - run: make lint
+      - run: make test PYTHON=python
+
+  build:
+    needs: check
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # 22.04 rather than latest: a frozen binary only runs on systems
+          # whose glibc is at least as recent as the one it was built on.
+          - os: ubuntu-22.04
+            channel: linux
+          - os: windows-latest
+            channel: windows
+          # Apple Silicon only; Intel Macs are not supported by this build.
+          - os: macos-latest
+            channel: mac
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - run: make install PYTHON=python
+      - run: PYTHON=python bash build.sh
+      # Artifacts drop the executable bit, so the release travels as a tar.
+      - run: tar -cf release-${{ matrix.channel }}.tar -C dist release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-${{ matrix.channel }}
+          path: release-${{ matrix.channel }}.tar
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: release-*
+          merge-multiple: true
+      - name: Install butler
+        run: |
+          curl -fsSL -o butler.zip \
+            https://broth.itch.zone/butler/linux-amd64/LATEST/archive/default
+          unzip -q butler.zip -d butler
+          chmod +x butler/butler
+          butler/butler -V
+      - name: Push to Itch.io
+        run: |
+          if [ "$GITHUB_REF_TYPE" = "tag" ]; then
+            version="$GITHUB_REF_NAME"
+          else
+            version="build-$GITHUB_RUN_NUMBER"
+          fi
+          for channel in linux windows mac; do
+            mkdir -p "$channel"
+            tar -xf "release-$channel.tar" -C "$channel"
+            butler/butler push "$channel/release" \
+              "$ITCH_TARGET:$channel" --userversion "$version"
+          done
+          butler/butler status "$ITCH_TARGET"

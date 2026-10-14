@@ -56,6 +56,6 @@ cp config.json README.md "$STAGE/"
 
 ARCHIVE="${NAME}-${PLATFORM}.zip"
 echo ">>> packing dist/${ARCHIVE}"
-(cd dist && zip -qr "$ARCHIVE" release)
+(cd dist && "$PYTHON" -m zipfile -c "$ARCHIVE" release)
 
 echo ">>> done: dist/${ARCHIVE}"
