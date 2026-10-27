@@ -1,4 +1,4 @@
-*This project has been created as part of the 42 curriculum by fbugri and omrakrak.*
+*This project has been created as part of the 42 curriculum by fbugri, omrakrak.*
 
 # Pac-Man — Ghosts! More ghosts!
 
