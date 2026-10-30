@@ -8,6 +8,7 @@ table rather than an error, so a broken save can never stop the game.
 from __future__ import annotations
 
 import json
+import math
 import os
 import tempfile
 from dataclasses import dataclass
@@ -60,6 +61,8 @@ def sanitize_score(raw: object) -> int | None:
     """
     if isinstance(raw, bool) or not isinstance(raw, (int, float)):
         return None
+    if isinstance(raw, float) and not math.isfinite(raw):
+        return None
     score = int(raw)
     return score if score >= 0 else None
 
@@ -102,7 +105,9 @@ class HighscoreTable:
                 raw = json.load(handle)
         except FileNotFoundError:
             return
-        except (OSError, json.JSONDecodeError, UnicodeDecodeError) as exc:
+        except (
+            OSError, json.JSONDecodeError, UnicodeDecodeError, RecursionError,
+        ) as exc:
             self.warnings.append(
                 f"highscores: cannot read '{self.path}' ({exc}); "
                 "starting from an empty table."

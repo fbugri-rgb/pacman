@@ -9,6 +9,7 @@ to a safe default and reported through :attr:`GameConfig.warnings`.
 from __future__ import annotations
 
 import json
+import math
 from dataclasses import dataclass, field
 from typing import Final
 
@@ -181,6 +182,11 @@ def _as_int(
             f"using {default}."
         )
         return default
+    if isinstance(value, float) and not math.isfinite(value):
+        warnings.append(
+            f"'{key}': {value} is not a finite number; using {default}."
+        )
+        return default
     number = int(value)
     if number < low or number > high:
         clamped = min(max(number, low), high)
@@ -222,6 +228,11 @@ def _as_float(
         )
         return default
     number = float(value)
+    if not math.isfinite(number):
+        warnings.append(
+            f"'{key}': {number} is not a finite number; using {default}."
+        )
+        return default
     if number < low or number > high:
         clamped = min(max(number, low), high)
         warnings.append(
@@ -361,30 +372,29 @@ def _parse_levels(
     elif isinstance(raw, list):
         entries = list(raw)
     else:
-        warnings.append("'level': expected an array; generating defaults.")
+        warnings.append("'level': expected an array; ignoring it.")
         entries = []
-    if not entries:
-        warnings.append(
-            f"'level': no level defined; generating {MIN_LEVELS} defaults."
-        )
     levels = [
         _parse_level(entry, index, pacgum, max_time, warnings)
         for index, entry in enumerate(entries)
     ]
     if not levels:
+        warnings.append(
+            f"'level': no level defined; generating {MIN_LEVELS} defaults."
+        )
         levels.append(
             LevelConfig(
                 DEFAULT_LEVEL_WIDTH, DEFAULT_LEVEL_HEIGHT, pacgum, max_time,
                 DEFAULT_GHOST_SPEED,
             )
         )
-    if len(levels) < MIN_LEVELS:
+    elif len(levels) < MIN_LEVELS:
         warnings.append(
             f"'level': only {len(levels)} level(s) defined; padding to "
             f"{MIN_LEVELS}."
         )
-        while len(levels) < MIN_LEVELS:
-            levels.append(_grown(levels[-1], 1))
+    while len(levels) < MIN_LEVELS:
+        levels.append(_grown(levels[-1], 1))
     return tuple(levels)
 
 
@@ -399,7 +409,8 @@ def parse_config(text: str) -> GameConfig:
 
     Raises:
         ConfigError: If the document is not valid JSON once comments are
-            stripped, or if its top level is not an object.
+            stripped, is nested too deeply to parse, or if its top level
+            is not an object.
     """
     warnings: list[str] = []
     try:
@@ -408,6 +419,8 @@ def parse_config(text: str) -> GameConfig:
         raise ConfigError(
             f"invalid JSON at line {exc.lineno}, column {exc.colno}: {exc.msg}"
         ) from exc
+    except RecursionError as exc:
+        raise ConfigError("the config is nested too deeply") from exc
     if not isinstance(parsed, dict):
         raise ConfigError("the top level of the config must be an object")
     data: dict[str, object] = parsed

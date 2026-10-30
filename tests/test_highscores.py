@@ -39,6 +39,11 @@ def test_score_rejects_negative_and_non_numbers() -> None:
     assert sanitize_score(12.9) == 12
 
 
+def test_score_rejects_non_finite_numbers() -> None:
+    assert sanitize_score(float("inf")) is None
+    assert sanitize_score(float("nan")) is None
+
+
 def test_missing_file_is_not_an_error(tmp_path: Path) -> None:
     table = HighscoreTable(str(tmp_path / "nope.json"))
     table.load()
@@ -49,6 +54,28 @@ def test_missing_file_is_not_an_error(tmp_path: Path) -> None:
 def test_corrupt_file_is_recovered(tmp_path: Path) -> None:
     path = tmp_path / "scores.json"
     path.write_text("{not json at all", encoding="utf-8")
+    table = HighscoreTable(str(path))
+    table.load()
+    assert table.entries == []
+    assert table.warnings
+
+
+def test_non_finite_scores_are_dropped(tmp_path: Path) -> None:
+    path = tmp_path / "scores.json"
+    path.write_text(
+        '[{"name": "a", "score": 1e999}, {"name": "b", "score": NaN},'
+        ' {"name": "c", "score": 5}]',
+        encoding="utf-8",
+    )
+    table = HighscoreTable(str(path))
+    table.load()
+    assert [entry.name for entry in table.entries] == ["c"]
+    assert table.warnings
+
+
+def test_deeply_nested_file_is_recovered(tmp_path: Path) -> None:
+    path = tmp_path / "scores.json"
+    path.write_text("[" * 100_000, encoding="utf-8")
     table = HighscoreTable(str(path))
     table.load()
     assert table.entries == []

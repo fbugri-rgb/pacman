@@ -71,8 +71,13 @@ class App:
 
     @property
     def warnings(self) -> list[str]:
-        """Return every startup warning worth showing the player."""
-        return list(self.config.warnings) + self._table.warnings
+        """Return every warning worth showing the player, most urgent first.
+
+        Highscore problems come first, newest first, because unlike the
+        config warnings they are not printed on stderr: a failed save
+        would otherwise stay hidden behind a startup warning.
+        """
+        return self._table.warnings[::-1] + list(self.config.warnings)
 
     def run(self) -> None:
         """Run the game until the player quits or closes the window."""

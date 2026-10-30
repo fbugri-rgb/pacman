@@ -8,7 +8,11 @@ import pytest
 
 from pacman.config import (
     ConfigError,
+    DEFAULT_LEVEL_WIDTH,
     DEFAULT_LIVES,
+    DEFAULT_PLAYER_SPEED,
+    DEFAULT_SEED,
+    DEFAULT_SUPER_PACGUM_DURATION,
     MAX_LEVEL_SIZE,
     MIN_LEVELS,
     MIN_LEVEL_SIZE,
@@ -81,6 +85,26 @@ def test_booleans_are_not_accepted_as_numbers() -> None:
     assert config.lives == DEFAULT_LIVES
 
 
+def test_non_finite_numbers_fall_back_to_defaults() -> None:
+    config = parse_config(
+        '{"lives": 1e999, "seed": NaN, "player_speed": Infinity,'
+        ' "super_pacgum_duration": NaN, "level": [{"width": -Infinity}]}'
+    )
+    assert config.lives == DEFAULT_LIVES
+    assert config.seed == DEFAULT_SEED
+    assert config.player_speed == DEFAULT_PLAYER_SPEED
+    assert config.super_pacgum_duration == DEFAULT_SUPER_PACGUM_DURATION
+    assert config.levels[0].width == DEFAULT_LEVEL_WIDTH
+    assert sum("finite" in warning for warning in config.warnings) == 5
+
+
+def test_missing_levels_are_reported_once() -> None:
+    config = parse_config("{}")
+    assert [w for w in config.warnings if w.startswith("'level'")] == [
+        f"'level': no level defined; generating {MIN_LEVELS} defaults."
+    ]
+
+
 def test_level_sizes_are_clamped() -> None:
     config = parse_config(
         '{"level": [{"width": 1, "height": 9999}]}'
@@ -127,6 +151,11 @@ def test_invalid_json_raises_config_error() -> None:
 def test_non_object_top_level_raises_config_error() -> None:
     with pytest.raises(ConfigError):
         parse_config("[1, 2, 3]")
+
+
+def test_deeply_nested_json_raises_config_error() -> None:
+    with pytest.raises(ConfigError):
+        parse_config("[" * 100_000)
 
 
 def test_missing_file_raises_config_error() -> None:
