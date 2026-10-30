@@ -44,7 +44,7 @@ downloading from Itch.io.
 | 19 | User interface | ✅ | HUD: score, lives, level n/N, time, gums left. Pause: resume / main menu. Game over and victory screens show the final score and a name prompt. |
 | 20 | Maze generator integration | ✅ | The repo wheel's sha256 is identical to the wheel inside the official `mazegenerator-00001.zip`. Every call goes through `pacman/maze.py`. `perfect=False`. Generator errors become `MazeError` → error screen. 2,523 sizes/seeds generated without a failure. |
 | 21 | OOP | ✅ | `Actor` → `Player` and `Ghost`. The wall rule (`open_directions`) lives in `Actor`, so both inherit it. `Game`, `App`, `Display`, `HighscoreTable` and `Level` are separate classes. |
-| 22 | Packaging & platform | ⚠️ | `make package` rebuilds `dist/pac-man-linux.zip` (binary + config + README) and the binary runs. **The Itch.io page is public**, while the subject asks for an unlisted/private build. |
+| 22 | Packaging & platform | ⚠️ → ✅ (P1 fixed) | `make package` rebuilds `dist/pac-man-linux.zip` (binary + config + README) and the binary runs. **The Itch.io page is public**, while the subject asks for an unlisted/private build. |
 
 ## 2. Issues found
 
@@ -58,7 +58,7 @@ downloading from Itch.io.
 | C1 | Cosmetic | A missing `level` prints two contradictory warnings: "no level defined; generating 10" and "only 1 level(s) defined". | `{}` |
 | C2 | Cosmetic | The main menu shows only `warnings[0]`, so a failed highscore save was hidden behind any config warning. Highscore warnings are not printed on stderr either. | unwritable `highscore_filename` + any config warning |
 | C3 | Cosmetic | `setup.cfg` excludes `.venv/` and `venv/` but not `env/`, so an evaluator venv named `env` would be linted. | `python3 -m venv env && make lint` |
-| P1 | **Mandatory** | The Itch.io page is public; the subject requires unlisted/private. | <https://fbugri-rgb.itch.io/pacman> returns 200 with 3 public uploads |
+| P1 | ~~**Mandatory**~~ ✅ Done | The Itch.io page was public; the subject requires unlisted/private. **Fixed 2026-10-30:** the page is now Restricted with a password and is no longer linked from the profile. | Logged out, <https://fbugri-rgb.itch.io/pacman> now shows "A password is required to view this page" |
 | P2 | Check | The eval sheet lists repo `intra-uuid-178f2cdb-…`, but the `vogsphere` remote is `intra-uuid-7a6caa5d-…-fbugri`. | Compare with `git remote -v` |
 | P3 | Minor | `explanation.md` (commit `2ef5b6a`) is on GitHub but not on vogsphere. | `git log vogsphere/main..main` |
 
@@ -66,8 +66,8 @@ downloading from Itch.io.
 
 ## 3. Changes made to the code
 
-All the code issues (E1–E5, C1–C3) are fixed. P1–P3 are outside the code
-and listed in §4.
+All the code issues (E1–E5, C1–C3) are fixed. P1 is done (see §4).
+P2 and P3 are outside the code and listed in §4.
 
 ### `pacman/config.py` — fixes E1, E3, E4, C1
 
@@ -134,9 +134,10 @@ and listed in §4.
 
 ## 4. Still to do (outside the code)
 
-1. **Itch.io → Restricted (P1).** Set the visibility on itch.io to
-   *Restricted*, not *Draft*, so the evaluator can still download it
-   through the secret URL. The README already says "unlisted build".
+1. ✅ **Itch.io → Restricted (P1) — done.** The page is password
+   protected and no longer linked from the profile (checked logged out on
+   2026-10-30). Have the password ready to give the evaluator so they can
+   download the build.
 2. **Confirm the graded repository (P2).** Check which vogsphere repo the
    evaluator clones (`intra-uuid-178f2cdb-…` on the sheet). Make sure it
    holds the final code.
