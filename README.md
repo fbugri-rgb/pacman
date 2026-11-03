@@ -354,6 +354,10 @@ have no notion of pixels, windows or key codes; they work in tiles and
 seconds. That is what makes them testable without a display, and the
 whole test suite runs headless.
 
+UML diagrams of the modules, classes, startup and frame sequences,
+screen and ghost states, level building and the release pipeline are in
+[docs/uml](docs/uml/README.md).
+
 ## Resources
 
 - The 42 subject, *Pac-Man — Ghosts! More ghosts!*
