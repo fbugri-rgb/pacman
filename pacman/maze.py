@@ -306,6 +306,7 @@ def _closest(
         overall when every one of them is already taken.
     """
     def distance(position: Position) -> int:
+        """Return the squared distance from ``position`` to ``target``."""
         return (position[0] - target[0]) ** 2 + (position[1] - target[1]) ** 2
 
     free = candidates - taken

@@ -39,7 +39,7 @@ Feature summary:
 - Persistent top-ten highscore table, tolerant to a corrupt file.
 - Cheat keys for the peer review.
 - Configuration in JSON with comments, every value validated and clamped.
-- flake8 clean, `mypy --strict` clean, 109 automated tests.
+- flake8 clean, `mypy --strict` clean, 115 automated tests.
 
 ## Instructions
 
@@ -298,7 +298,7 @@ block, so a window is never left open.
 ```sh
 make lint          # flake8 . and mypy with the required flags
 make lint-strict   # flake8 . and mypy . --strict
-make test          # 109 tests
+make test          # 115 tests
 ```
 
 All three are clean. Every function carries type hints and a PEP 257

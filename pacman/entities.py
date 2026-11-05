@@ -213,6 +213,7 @@ class Player(Actor):
             keeps going straight.
         """
         def pick(actor: Actor) -> Direction | None:
+            """Choose the player's next direction, or None to stand still."""
             if not self.started:
                 return None
             wanted = self.desired
@@ -368,6 +369,7 @@ class Ghost(Actor):
         fleeing = self.state is GhostState.FRIGHTENED
 
         def cost(direction: Direction) -> float:
+            """Score a direction; the lowest score is the best move."""
             dx, dy = direction.delta
             x = self.tile[0] + dx
             y = self.tile[1] + dy
@@ -378,6 +380,7 @@ class Ghost(Actor):
             return squared + self._rng.random() * 0.1
 
         def pick(actor: Actor) -> Direction | None:
+            """Choose the ghost's next direction, avoiding a U-turn."""
             options = actor.open_directions(level)
             if not options:
                 return None
