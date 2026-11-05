@@ -7,8 +7,8 @@ imposed **A-Maze-ing** generator. Twelve levels, four ghosts with their
 own personalities, super-pacgums, a timer per level, persistent
 highscores and a cheat mode for the peer review.
 
-**Play it on Itch.io: <https://fbugri-rgb.itch.io/pacman>** — free
-builds for Linux, Windows and macOS (Apple Silicon).
+**Play it on Itch.io: <https://fbugri-rgb.itch.io/pacman>** (password:
+`pacman`) — free builds for Linux, Windows and macOS (Apple Silicon).
 
 ---
 
@@ -60,6 +60,11 @@ This installs the runtime and development dependencies from
 `requirements.txt`, then the A-Maze-ing wheel. The package is installed
 as shipped and is never modified.
 
+If a `.venv/` folder exists in the project, every `make` rule uses its
+Python automatically, so the venv does not need activating. Without one,
+`python3` is used; another interpreter can be given with
+`make <rule> PYTHON=...`.
+
 ### Play
 
 ```sh
@@ -99,11 +104,13 @@ the score screen.
 | Rule | Effect |
 | --- | --- |
 | `make install` | Install the dependencies and the maze generator |
+| `make install-maze` / `make uninstall-maze` | Install / remove only the maze generator wheel |
 | `make run` | Launch the game on `config.json` |
 | `make debug` | Launch it under `pdb` |
 | `make lint` | `flake8 .` and `mypy` with the required flags |
 | `make lint-strict` | `flake8 .` and `mypy . --strict` |
 | `make test` | Run the test suite |
+| `make test-pretty` | Run it with Jest/Mocha-style output: a tick and a time per test |
 | `make package` | Build the distributable archive |
 | `make clean` / `make fclean` | Remove caches / also remove the build output |
 
@@ -412,7 +419,8 @@ register, the acceptance test plan and the blocking points met are in the
 
 The game is distributed on Itch.io, at
 <https://fbugri-rgb.itch.io/pacman>, as an unlisted build for Linux,
-Windows and macOS (Apple Silicon).
+Windows and macOS (Apple Silicon). The page is password protected; the
+password is `pacman`.
 
 PyInstaller cannot cross-compile, so the three builds come from the
 GitHub Actions workflow `.github/workflows/release.yml`: it runs the
