@@ -16,7 +16,7 @@ wheel installed from the repository, no highscore file present.
 | A2 | `python3 pac-man.py` | One-line error, usage line, exit code 1, no traceback |
 | A3 | `python3 pac-man.py a.json b.json` | One-line error about the argument count, exit code 1 |
 | A4 | `python3 pac-man.py config.txt` | Refused because the extension is not `.json`, exit code 1 |
-| A5 | `python3 pac-man.py missing.json` | Clear "cannot be read" message, exit code 1 |
+| A5 | `python3 pac-man.py missing.json` | `error: no such file: 'missing.json'`, exit code 1 |
 | A6 | `make run`, `make debug`, `make clean`, `make lint`, `make test` | Each rule does what its name says; `lint` and `test` report nothing |
 
 ## B. Configuration robustness
